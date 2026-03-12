@@ -1,0 +1,14 @@
+# 학습 진도 파일 (개인별 생성)
+.cc-tutor-om-progress.json
+
+# 학습자 실제 업무 데이터 (민감 정보)
+my-data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
