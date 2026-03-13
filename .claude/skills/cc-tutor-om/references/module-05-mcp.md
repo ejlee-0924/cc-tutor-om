@@ -73,45 +73,71 @@ OM 비유: "여러 창구에서 정보를 모아 한 장 보고서로 만드는 
 
 ## EXECUTE
 
-**Step 1 — MCP 개념 이해**
+---
+
+### Step 1 — MCP 개념 이해
+
+📋 아래를 복사해서 입력하세요:
 
     MCP가 뭔지 설명해줘. 어떤 외부 서비스를 연결할 수 있어?
 
 MCP의 개념과 연결 가능한 서비스 목록을 확인한다.
 
-**Step 2 — MCP 설정 확인**
+---
+
+### Step 2 — MCP 설정 확인
+
+📋 아래를 복사해서 입력하세요:
 
     현재 연결된 MCP 서버 목록을 보여줘.
 
 이미 설정된 MCP 서버가 있는지 확인한다.
 
-**Step 3 — Slack MCP 체험** (설정 완료 시)
+---
+
+### Step 3 — Slack MCP 체험 (설정 완료 시)
+
+📋 아래를 복사해서 입력하세요:
 
     #cc-tutor-om-help 채널의 최근 메시지를 읽어줘.
 
 Slack MCP가 연결되어 있으면 채널 메시지를 직접 읽는 것을 체험한다.
 
-**Step 4 — 분석 결과 Slack 공유** (설정 완료 시)
+---
+
+### Step 4 — 분석 결과 Slack 공유 (설정 완료 시)
+
+📋 아래를 복사해서 입력하세요:
 
     survey-sample.csv를 분석하고, 핵심 요약을
     Slack #cc-tutor-om-help 채널에 공유해줘.
 
 분석 → Slack 전송이 한 번에 되는 것을 체험한다.
 
-**Step 5 — Notion MCP 체험** (설정 완료 시)
+---
+
+### Step 5 — Notion MCP 체험 (설정 완료 시)
+
+📋 아래를 복사해서 입력하세요:
 
     Notion에서 강사 관련 데이터베이스를 찾아줘.
 
 Notion DB를 직접 조회하는 것을 체험한다.
 
-**Step 6 — Context Sync 체험**
+---
+
+### Step 6 — Context Sync 체험
+
+📋 아래를 복사해서 입력하세요:
 
     /my-context-sync를 실행하여 Slack + Notion + Gmail에서
     이번 주 교육 관련 정보를 한 문서로 정리해줘.
 
 여러 소스의 정보가 하나로 합쳐지는 것을 확인한다.
 
-**Step 7 — MCP 미설정 시 대안**
+---
+
+### Step 7 — MCP 미설정 시 대안
 
 MCP 서버가 설정되어 있지 않은 경우:
 - MCP 설정 방법을 안내받는다

@@ -83,25 +83,41 @@ M1에서 CLAUDE.md에 넣은 검수 기준이 여기서 실제로 적용된다:
 
 ### Part A: 파일 도구 기본
 
-**Step 1 — Read: PPT 읽기**
+---
+
+### Step 1 — Read: PPT 읽기
+
+📋 아래를 복사해서 입력하세요:
 
     samples/slide-sample.pptx를 읽고 슬라이드별 내용을 요약해줘
 
 각 슬라이드의 제목과 본문이 추출되는 것을 확인한다.
 
-**Step 2 — Glob: 파일 찾기**
+---
+
+### Step 2 — Glob: 파일 찾기
+
+📋 아래를 복사해서 입력하세요:
 
     samples/ 폴더에서 PDF 파일만 찾아줘
 
 Glob이 패턴 매칭으로 파일을 찾는 것을 확인한다.
 
-**Step 3 — Grep: 내용 검색**
+---
+
+### Step 3 — Grep: 내용 검색
+
+📋 아래를 복사해서 입력하세요:
 
     survey-sample.csv에서 '개선'이 들어간 응답만 찾아줘
 
 Grep이 파일 내용에서 텍스트를 검색하는 것을 확인한다.
 
-**Step 4 — Write: 결과 저장**
+---
+
+### Step 4 — Write: 결과 저장
+
+📋 아래를 복사해서 입력하세요:
 
     위 분석 결과를 reports/search-results.md로 저장해줘
 
@@ -109,20 +125,32 @@ Write로 새 파일이 생성되는 것을 확인한다.
 
 ### Part B: Plan 모드 + 교안 검수
 
-**Step 5 — Plan 모드로 검수 계획**
+---
+
+### Step 5 — Plan 모드로 검수 계획
+
+📋 아래를 복사해서 입력하세요:
 
     slide-sample.pptx를 curriculum-sample.pdf 기준으로 검수하는 계획을 세워줘.
     실행은 하지 말고 계획만 보여줘.
 
 Plan 모드에서 계획이 나오면 내용을 확인한다.
 
-**Step 6 — 계획 실행: 검수 리포트**
+---
+
+### Step 6 — 계획 실행: 검수 리포트
+
+📋 아래를 복사해서 입력하세요:
 
     좋아, 실행해줘. 검수 결과를 reports/review-report.md로 저장해줘.
 
 CLAUDE.md의 검수 프로토콜(REJECT/PASS/CONDITIONAL)이 자동 적용되는지 확인한다.
 
-**Step 7 — python-pptx로 오탈자 수정**
+---
+
+### Step 7 — python-pptx로 오탈자 수정
+
+📋 아래를 복사해서 입력하세요:
 
     slide-sample.pptx에서 발견된 오탈자를 수정하고 slide-sample-fixed.pptx로 저장해줘
 
@@ -130,7 +158,11 @@ python-pptx 설치 필요 시 Claude Code가 자동으로 설치를 시도한다
 
 ### Part C: 만족도 분석
 
-**Step 8 — CSV 분석**
+---
+
+### Step 8 — CSV 분석
+
+📋 아래를 복사해서 입력하세요:
 
     survey-sample.csv를 읽고 전체 분석해줘:
     - 총 응답 수, 평균 만족도
@@ -139,7 +171,11 @@ python-pptx 설치 필요 시 Claude Code가 자동으로 설치를 시도한다
 
 CLAUDE.md의 분석 규칙(원문 보존, 긍정/부정 분류)이 적용되는지 확인한다.
 
-**Step 9 — 메일 초안 생성**
+---
+
+### Step 9 — 메일 초안 생성
+
+📋 아래를 복사해서 입력하세요:
 
     분석 결과를 바탕으로 두 가지 메일 초안을 만들어줘:
     1. 고객사 보고 메일 (격식체)
@@ -149,14 +185,22 @@ CLAUDE.md의 톤앤매너 규칙이 적용되는지 확인한다.
 
 ### Part D: 코드 분석 (디버깅 맛보기)
 
-**Step 10 — 앱스크립트 분석**
+---
+
+### Step 10 — 앱스크립트 분석
+
+📋 아래를 복사해서 입력하세요:
 
     apps-script-broken.js를 읽고 문제점을 찾아줘.
     각 버그마다 원인과 해결 방법을 설명해줘.
 
 5개 버그가 모두 발견되는지 확인한다.
 
-**Step 11 — 수정본 생성**
+---
+
+### Step 11 — 수정본 생성
+
+📋 아래를 복사해서 입력하세요:
 
     버그를 모두 수정한 apps-script-fixed.js를 만들어줘.
 
@@ -164,7 +208,9 @@ CLAUDE.md의 톤앤매너 규칙이 적용되는지 확인한다.
 
 ### Part E: Claude in Office 소개
 
-**Step 12 — 역할 분담 정리**
+---
+
+### Step 12 — 역할 분담 정리
 
 Claude in PowerPoint와 Claude in Excel의 존재를 소개한다:
 - Claude Code: 대량 일괄 처리 (오늘 배운 것)
