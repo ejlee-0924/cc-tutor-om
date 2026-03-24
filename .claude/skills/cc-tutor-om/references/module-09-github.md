@@ -139,8 +139,10 @@ Git의 커밋 과정을 체험한다.
     1. git clone으로 레포 가져오기
     2. Claude Code 설치
     3. CLAUDE.md 확인 (팀 규칙 자동 적용)
-    4. /교안검수 스킬 실행
-    5. 첫 업무 완료!
+    4. MCP 설정 (workspace-mcp, Slack, 세일즈맵) — M5-1 참고
+    5. 학습용 시트 접근 확인
+    6. /교안검수 스킬 실행
+    7. 첫 업무 완료!
 
     onboarding-guide.md로 저장해줘.
 
