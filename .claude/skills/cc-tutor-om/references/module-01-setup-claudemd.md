@@ -87,33 +87,15 @@ cc-tutor-om 레포를 클론한 폴더에서 셋업 스크립트를 실행한다
 
 ---
 
-### Step 3 — 첫 대화
+### Step 3 — 첫 대화 + 도구 체험
 
 📋 아래를 복사해서 입력하세요:
 
-    안녕, 넌 뭘 할 수 있어?
+    안녕! 넌 뭘 할 수 있어?
+    그리고 이 프로젝트의 README.md를 읽고 요약해주고,
+    samples 폴더에 어떤 파일들이 있는지도 보여줘.
 
-Claude Code의 핵심 도구(Read, Write, Edit, Glob, Grep, Bash)를 소개받는다.
-
----
-
-### Step 4 — 권한 시스템 체험
-
-📋 아래를 복사해서 입력하세요:
-
-    이 프로젝트의 README.md 파일을 읽고 요약해줘
-
-파일 읽기 권한 요청이 나타나면 "Allow"를 선택한다. 이것이 Claude Code의 안전장치.
-
----
-
-### Step 5 — samples/ 폴더 탐색
-
-📋 아래를 복사해서 입력하세요:
-
-    samples 폴더에 어떤 파일들이 있는지 보여줘
-
-Glob 도구가 파일 목록을 보여주는 것을 확인한다.
+Claude Code의 핵심 도구(Read, Write, Edit, Glob, Grep, Bash)를 소개받고, 파일 읽기 권한 요청(Allow once/always)을 체험하고, Glob으로 파일 목록을 확인한다 — 이 한 번의 대화로 세 가지를 한꺼번에 경험한다.
 
 ### Part B: CLAUDE.md 개념 이해
 

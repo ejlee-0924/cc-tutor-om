@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CC-Tutor-OM 커리큘럼 — OM을 위한 Claude Code 학습</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --surface: #111827;
+    --surface-hover: #1a2236;
+    --card: #161e2e;
+    --border: #1e293b;
+    --border-active: #4f8fff;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #4f8fff;
+    --accent-glow: rgba(79,143,255,0.15);
+    --gold: #f59e0b;
+    --gold-glow: rgba(245,158,11,0.15);
+    --green: #10b981;
+    --green-glow: rgba(16,185,129,0.12);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167,139,250,0.12);
+    --red: #f87171;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    text-align: center;
+    padding: 80px 24px 60px;
+    background: linear-gradient(180deg, rgba(79,143,255,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent-glow);
+    border: 1px solid rgba(79,143,255,0.3);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 30%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 17px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 32px;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .hero-stat {
+    text-align: center;
+  }
+  .hero-stat .num {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--gold);
+  }
+  .hero-stat .label {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  /* ── Container ── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Track header ── */
+  .track {
+    margin-top: 60px;
+    margin-bottom: 32px;
+  }
+  .track-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 8px;
+  }
+  .track-label.essential { color: var(--accent); }
+  .track-label.advanced { color: var(--gold); }
+  .track-line {
+    width: 32px; height: 2px;
+    border-radius: 1px;
+  }
+  .track-line.essential { background: var(--accent); }
+  .track-line.advanced { background: var(--gold); }
+  .track h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .track p {
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  /* ── Module card ── */
+  .module-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .module-card:hover {
+    border-color: rgba(79,143,255,0.3);
+  }
+  .module-card.advanced-card:hover {
+    border-color: rgba(245,158,11,0.3);
+  }
+
+  .module-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .module-header:hover {
+    background: var(--surface-hover);
+  }
+
+  .module-num {
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .essential-card .module-num { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+  .advanced-card .module-num { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+  .module-meta { flex: 1; min-width: 0; }
+  .module-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .module-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .module-badge {
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .module-chevron {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    color: var(--text-muted);
+    transition: transform 0.25s;
+  }
+  .module-card.open .module-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* ── Module body ── */
+  .module-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  .module-card.open .module-body {
+    display: block;
+  }
+
+  .module-section {
+    padding: 24px;
+  }
+  .module-section + .module-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+  .section-label.why {
+    color: var(--accent);
+    background: var(--accent-glow);
+  }
+  .section-label.practice {
+    color: var(--green);
+    background: var(--green-glow);
+  }
+  .section-label.mission {
+    color: var(--gold);
+    background: var(--gold-glow);
+  }
+
+  .why-text {
+    font-size: 15px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  /* ── Practice steps ── */
+  .practice-group {
+    margin-bottom: 20px;
+  }
+  .practice-group:last-child {
+    margin-bottom: 0;
+  }
+  .practice-group-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--purple);
+    margin-bottom: 10px;
+    padding-left: 2px;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .step:last-child { margin-bottom: 0; }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    background: var(--surface);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    margin-top: 1px;
+  }
+  .step-content {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+  .step-content code {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 13px;
+    color: var(--accent);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+  .step-content strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .mission-text {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.8;
+    padding: 16px;
+    background: var(--gold-glow);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+  }
+
+  /* ── Learner table ── */
+  .learner-section {
+    margin-top: 60px;
+    margin-bottom: 60px;
+  }
+  .learner-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .learner-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .learner-table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .learner-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .learner-table tr:hover td {
+    background: var(--surface-hover);
+  }
+
+  /* ── Data table ── */
+  .data-section {
+    margin-bottom: 60px;
+  }
+  .data-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .data-section > p {
+    color: var(--text-dim);
+    font-size: 15px;
+    margin-bottom: 16px;
+  }
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+  }
+  .data-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .data-icon {
+    font-size: 20px;
+  }
+  .data-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .data-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 48px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 40px; }
+    .hero-stats { gap: 24px; }
+    .module-header { padding: 16px; gap: 12px; }
+    .module-section { padding: 16px; }
+    .module-num { width: 36px; height: 36px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">CC-TUTOR-OM</div>
+  <h1>OM을 위한 Claude Code<br>학습 커리큘럼</h1>
+  <p>교육 운영 매니저(OM)의 실제 업무 — 교안 검수, 만족도 분석, 강사 매칭, 싱크업 정리를 Claude Code 10가지 핵심 기능으로 자동화합니다.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">14</div><div class="label">모듈 (서브모듈 포함)</div></div>
+    <div class="hero-stat"><div class="num">10</div><div class="label">핵심 기능</div></div>
+    <div class="hero-stat"><div class="num">7</div><div class="label">실습 샘플 CSV</div></div>
+    <div class="hero-stat"><div class="num">10</div><div class="label">배지</div></div>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Essential Track -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="track">
+    <div class="track-label essential">
+      <span class="track-line essential"></span>
+      Essential
+    </div>
+    <h2>기능 순차 학습 — M1 → M5</h2>
+    <p>순서대로 진행하며 Claude Code의 핵심 기능을 하나씩 익힙니다.</p>
+  </div>
+
+  <!-- M1 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">1</div>
+      <div class="module-meta">
+        <div class="module-title">작업환경 세팅 + CLAUDE.md</div>
+        <div class="module-subtitle">설치 · 인증 · 권한 · CLAUDE.md</div>
+      </div>
+      <div class="module-badge">🌱</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">Step1 Gems에서 매번 반복 지시했던 규칙(한국어, 검수 기준, 메일 톤)을 <strong>CLAUDE.md 한 번 세팅으로 영구 적용</strong>. 파일이니까 Git으로 팀 공유 가능하고, 누가 실행해도 동일 품질.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 7 Steps</div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part A: Setup</div>
+          <div class="step"><div class="step-num">1</div><div class="step-content"><code>claude --version</code>으로 설치 확인. 미설치 시 Node.js + npm 설치</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><code>./setup.sh</code> 실행 — 글로벌 스킬 자동 설치</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">"안녕! 넌 뭘 할 수 있어? README.md 요약해주고, samples 폴더 파일도 보여줘" — 한 번의 대화로 <strong>핵심 도구 소개 + 권한 시스템 + Glob</strong> 동시 체험</div></div>
+        </div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part B: CLAUDE.md 개념</div>
+          <div class="step"><div class="step-num">6</div><div class="step-content">"CLAUDE.md가 뭔지 설명해줘" — <strong>작업 폴더 vs 프로젝트</strong> 두 레벨 이해</div></div>
+        </div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part C: 작업환경 세팅 (대화형)</div>
+          <div class="step"><div class="step-num">7</div><div class="step-content">"내 작업환경을 세팅해줘" — Claude Code가 이름/팀/위치를 물어보고, <strong>팀 공통 CLAUDE.md</strong>(한국어, reports/ 저장, 메일 톤) + <strong>프로젝트 CLAUDE.md</strong>(검수 프로토콜 REJECT/CONDITIONAL/PASS, 만족도 분석 규칙) 자동 생성</div></div>
+          <div class="step"><div class="step-num">8</div><div class="step-content">"survey-sample.csv를 분석해줘" — 두 CLAUDE.md가 <strong>동시에 적용</strong>되는 것 체감</div></div>
+          <div class="step"><div class="step-num">9</div><div class="step-content"><code>/memory</code> 소개 — 개인 메모장, 어떤 프로젝트에서든 적용</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">Claude Code로 업무 파일 1개를 읽어보세요 (교안 PPT, 만족도 CSV, 보고서 Word 등). 결과 스크린샷을 #cc-tutor-om-help에 공유. CLAUDE.md에 규칙 1개 추가.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M2 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">2</div>
+      <div class="module-meta">
+        <div class="module-title">파일 다루기 + Plan 모드</div>
+        <div class="module-subtitle">Read · Write · Edit · Glob · Grep · Plan 모드</div>
+      </div>
+      <div class="module-badge">📄</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">Step1 교안 검수봇, 만족도 분석 에이전트의 가장 큰 한계 = "파일을 직접 다루지 못하는 것". Claude Code의 <strong>5가지 파일 도구 + Plan 모드</strong>를 배우면 PPT 직접 분석, CSV 읽기+보고서 생성, 코드 읽기+수정이 모두 가능.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 8 Steps</div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part A: 파일 도구 기본</div>
+          <div class="step"><div class="step-num">1</div><div class="step-content">"slide-sample.pptx를 읽고 슬라이드별 내용을 요약해줘" — <strong>Read</strong> (PPT 읽기)</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">"samples/ 폴더에서 PDF 파일만 찾아줘" — <strong>Glob</strong> (파일 찾기)</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">"survey-sample.csv에서 '개선'이 들어간 응답만 찾아줘" — <strong>Grep</strong> (내용 검색)</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content">"분석 결과를 reports/search-results.md로 저장해줘" — <strong>Write</strong> (결과 저장)</div></div>
+        </div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part B: Plan 모드 + 교안 검수</div>
+          <div class="step"><div class="step-num">5</div><div class="step-content">"PPT를 커리큘럼 기준으로 검수하는 <strong>계획을 세워줘. 실행은 하지 말고 계획만.</strong>" — Plan 모드</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-content">"좋아, 실행해줘" — CLAUDE.md 검수 프로토콜(REJECT/CONDITIONAL/PASS) 자동 적용 확인</div></div>
+          <div class="step"><div class="step-num">7</div><div class="step-content">"오탈자를 수정하고 slide-sample-fixed.pptx로 저장해줘" — python-pptx 활용</div></div>
+        </div>
+        <div class="practice-group">
+          <div class="practice-group-title">Part C: 만족도 분석</div>
+          <div class="step"><div class="step-num">8</div><div class="step-content">"survey-sample.csv 전체 분석 — 총 응답 수, 평균 만족도, 항목별 평균, 주관식 긍정/부정 분류"</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">실제 업무 파일 1개를 Claude Code로 분석 (교안 PPT 검수 또는 만족도 CSV 분석). 결과를 기존 수작업 결과와 비교하고 차이점을 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M3 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">3</div>
+      <div class="module-meta">
+        <div class="module-title">Skill 사용</div>
+        <div class="module-subtitle">스킬 탐색 · 설치 · 실행</div>
+      </div>
+      <div class="module-badge">🔧</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M2에서 PPT 검수하고 CSV 분석할 때 매번 5단계 지시를 반복했다. 스킬을 쓰면 <code>/교안검수</code> 한 마디면 끝. 누가 실행해도 <strong>동일 품질</strong>, 팀원에게는 스킬 설치만 하면 된다.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 6 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content"><code>/교안검수</code> 실행 — PPT+커리큘럼 자동 찾기 → 검수 프로토콜 적용 → 리포트 생성 전 과정 관찰</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">"사용 가능한 스킬 목록 보여줘" — 글로벌/회사/프로젝트 스킬 목록 확인</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><code>/싱크업요약</code> 실행 — syncup-sample.csv 읽고 교육 개요 한 장 요약, 빈 필드 경고 확인</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><code>/my-content-fetch</code> + URL — 콘텐츠 가져와 요약하는 것 체험</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><code>npx skills add</code>로 커뮤니티 외부 스킬 검색 및 설치</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-content">"SKILL.md를 읽어줘. 스킬이 어떤 구조로 만들어졌는지 설명해줘." — M7 사전 이해</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">기존 설치된 스킬 중 하나를 실제 업무에 사용 (/my-context-sync로 주간 정보 수집 또는 /my-content-fetch로 교육 관련 콘텐츠 정리). 사용 결과를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M4 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">4</div>
+      <div class="module-meta">
+        <div class="module-title">Subagent</div>
+        <div class="module-subtitle">병렬 작업 분배</div>
+      </div>
+      <div class="module-badge">🚀</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M2에서 파일을 하나씩 처리했는데, 교육 준비 시 <strong>코치일정/GPT계정/에그</strong> 등 독립적인 확인 작업이 많다. Subagent를 쓰면 여러 비서에게 각자 일을 맡기듯 동시에 처리하여 시간 대폭 단축.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 4 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content"><strong>병렬 처리 체험</strong> — "박민수/이서연/김지훈 3명의 4월 빈 날짜를 <strong>동시에</strong> 찾아줘" → 서브에이전트 동시 실행</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>교육 준비 3종 병렬</strong> — ① 코치 가용 여부 ② GPT 계정 가용 번호 ③ 에그 대여 가능 여부를 동시에 확인</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>종료/회고 데이터 병렬 분석</strong> — review-log를 3가지 관점(강사별 만족도, 기업별 비교, 이슈 유형별 빈도)에서 동시 분석 → reports/ 저장</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>병렬 가능 여부 판별</strong> — 4가지 작업 조합이 병렬 가능한지 직접 판별하는 실습</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">실제 업무에서 동시에 처리할 수 있는 작업 2개를 찾아 Subagent로 실행. 순차 vs 병렬 소요 시간 차이를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5-1 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">5-1</div>
+      <div class="module-meta">
+        <div class="module-title">MCP 개념 + 설치</div>
+        <div class="module-subtitle">workspace-mcp · Slack · 세일즈맵 설치</div>
+      </div>
+      <div class="module-badge">🔌</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M4에서 CSV로 분석했지만 데이터는 실제로 Google Sheets에 있다. CSV는 다운받는 순간 이미 과거 데이터. <strong>MCP를 쓰면 항상 최신 데이터에 직접 접근</strong>하고, Slack/세일즈맵까지 연결.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 6 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"MCP가 뭔지 설명해줘" — 개념 이해</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>workspace-mcp 설치</strong> — settings.json 추가 + Google 계정 인증</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>Slack MCP 설치</strong> — settings.json 추가</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>세일즈맵 MCP 설치</strong> — settings.json 추가</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><code>/mcp</code> 명령어로 3개 서버 모두 "connected" 상태 확인</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-content">"[학습용] 코치일정 캘린더 시트를 읽어줘" — workspace-mcp 정상 연결 테스트</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">MCP 3개(workspace-mcp, Slack, 세일즈맵) 모두 설치 후 /mcp로 연결 확인. 학습용 시트 1개를 읽어보고 결과 스크린샷을 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5-2 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">5-2</div>
+      <div class="module-meta">
+        <div class="module-title">Google Sheets 조회 + 입력</div>
+        <div class="module-subtitle">read_sheet_values · modify_sheet_values</div>
+      </div>
+      <div class="module-badge"></div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">OM 업무의 70%가 Google Sheets. 코치일정/GPT 계정/에그/종료회고 — <strong>매일 4~5개 시트를 오가며 작업</strong>하는데, Claude Code에서 바로 처리하면 시트 전환 시간 절약.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps (학습용 시트 실전)</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content"><strong>코치일정 캘린더</strong> — "박민수 코치의 이번 달 빈 날짜를 찾아줘" (조회)</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>코치일정 캘린더</strong> — "박민수 코치 4/15에 '한국전자 AI특강'을 추가해줘" (입력 + 결과 확인)</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>GPT 계정 관리</strong> — "4/15 사용 가능한 GPT 계정 번호를 알려줘" (조건 필터링 조회)</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>GPT 계정 관리</strong> — "1~15번 계정을 한국전자 AI특강에 배정 기록해줘" (범위 지정 쓰기)</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><strong>강의관리</strong> — "이번 달 종료 과정 중 만족도 4.5 미만인 건을 찾아줘" (복합 조건 필터링)</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">학습용 시트에서 실제 업무와 유사한 조회 1건 + 입력 1건 수행. 결과 스크린샷을 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5-3 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">5-3</div>
+      <div class="module-meta">
+        <div class="module-title">Forms + Sheets + Gmail</div>
+        <div class="module-subtitle">만족도 E2E 파이프라인</div>
+      </div>
+      <div class="module-badge"></div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">교육 종료 후 만족도 설문 → 응답 수집 → 분석 → 리포트 → 메일이 OM 핵심 업무. 현재 4개 앱을 오가며 수작업 <strong>100분+</strong>. MCP로 한 번에 파이프라인 처리.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"한국전자 AI특강 만족도 설문지를 <strong>Google Forms로 만들어줘</strong>" — 5점 척도 3개 + 주관식 1개</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">"설문 응답 결과를 확인하고 분석해줘" — 응답 조회 + 항목별 평균 + 주관식 긍정/부정 분류 한 번에</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">"강의 결과 리포트를 reports/에 저장해줘" — 과정명, 일시, 항목별 평균, 주관식 요약, 개선 제안</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content">"강사님에게 만족도 결과 메일을 <strong>임시저장</strong>해줘" — draft_gmail_message (실제 발송 금지)</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content">"싱크업 시트에서 담당자 이메일 조회 → 격식체로 교육 결과 메일 draft" — <strong>Sheets 조회 → Gmail 복합 작업</strong></div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">실제 만족도 설문 1건을 Google Forms로 생성 (또는 기존 설문 응답 분석). 분석 결과를 리포트로 저장. 강사/담당자 메일을 draft로 작성. 결과를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5-4 -->
+  <div class="module-card essential-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">5-4</div>
+      <div class="module-meta">
+        <div class="module-title">Slack + 세일즈맵 + Context Sync</div>
+        <div class="module-subtitle">싱크업 보완 · 결과 공유 · 통합 수집</div>
+      </div>
+      <div class="module-badge"></div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">LD가 싱크업 시트를 대충 써서 넘기면 빈칸을 채우려고 세일즈맵/Gmail/Slack 3개 앱을 오가며 <strong>30분+ 수작업</strong>. MCP 통합으로 "싱크업 빈칸 채워줘" 한 마디에 자동 수집+보완안 제시 <strong>5분</strong>.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"교육운영 채널의 최근 메시지를 읽어줘" — <strong>Slack MCP</strong> 연결 확인</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">"한국전자 AI특강 딜 정보를 세일즈맵에서 찾아줘" — <strong>세일즈맵 MCP</strong> 조회 (금액, 담당 LD, 일정)</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>핵심 실습:</strong> "싱크업 시트를 읽고 빈 필드를 찾아줘. 세일즈맵, Gmail, Slack에서 정보를 수집해서 보완안을 제시해줘" — <strong>멀티소스 조합</strong></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content">"만족도 분석 결과 요약을 교육운영 Slack 채널에 공유해줘" — slack_send_message</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><code>/my-context-sync</code> 실행 — Slack, Gmail, Sheets에서 이번 주 교육 정보를 <strong>한 문서로 정리</strong></div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">실제 싱크업 시트 1건의 빈칸을 세일즈맵 + Slack으로 보완 시도. 보완 결과를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- Advanced Track -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="track">
+    <div class="track-label advanced">
+      <span class="track-line advanced"></span>
+      Advanced
+    </div>
+    <h2>자유 선택 — M6 → M10</h2>
+    <p>Essential 완료 후 원하는 순서로 학습합니다. 시급한 경우 예외 접근 허용.</p>
+  </div>
+
+  <!-- M6 -->
+  <div class="module-card advanced-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">6</div>
+      <div class="module-meta">
+        <div class="module-title">Plugin + Clarify</div>
+        <div class="module-subtitle">vague · unknown · metamedium 3모드</div>
+      </div>
+      <div class="module-badge">🔍</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">"AI 교육 해주세요"라고만 오면 대상/수준/기대성과를 확인하는 데 왕복 <strong>3~5일</strong>. Clarify vague 모드로 10분 만에 구체적 스펙, unknown 모드로 숨겨진 맹점 분석, metamedium 모드로 내용 vs 형식 최적화.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"Plugin과 Skill의 차이를 설명해줘" — 개념 이해</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content">싱크업 시트의 모호한 교육 요구사항을 <strong>Clarify(vague)</strong>로 구조화 — LD에게 역질문 리스트 생성</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content">Clarify 질문에 답변 → <strong>구체적인 교육 스펙 문서</strong> 자동 생성 확인</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content">강의관리 시트의 체크리스트를 <strong>Clarify(unknown)</strong>으로 분석 — Known/Unknown <strong>4사분면</strong> 분석</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content">만족도 결과 전달 최적 형태(Gmail/Sheets/Slack/PDF)를 <strong>Clarify(metamedium)</strong>으로 분석</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">실제 교육 요구사항 1건을 Clarify(vague)로 구조화. 생성된 스펙 문서를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M7 -->
+  <div class="module-card advanced-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">7</div>
+      <div class="module-meta">
+        <div class="module-title">Skill Creator</div>
+        <div class="module-subtitle">스킬 제작 · Eval · A/B 개선</div>
+      </div>
+      <div class="module-badge">⚡</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M3에서 스킬을 "사용"했고 이제 직접 만들 차례. M5에서 했던 만족도 분석 워크플로우(시트 읽기 → 분석 → 분류 → 리포트)를 <code>/만족도분석</code> 한 마디로 실행되도록 <strong>스킬로 패키징</strong>.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">기존 SKILL.md 구조 분석 — 스킬이 어떤 섹션으로 구성되는지 이해</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>/만족도분석 스킬 설계</strong> — 5단계 워크플로우: Sheets 데이터 읽기(MCP) → 항목별 평균 → 주관식 분류 → 리포트 저장 → 강사/담당자용 요약</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><code>.claude/skills/survey-analysis/SKILL.md</code>로 <strong>실제 파일 생성</strong></div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><code>/만족도분석</code> 실행 — 학습용 Sheets에서 데이터 읽고 분석하는지 확인</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><strong>Eval 품질 검증</strong> — M2 수동 분석 결과 vs 스킬 자동 분석 결과 비교 (분석 항목, 분류 결과, 톤앤매너)</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">본인의 반복 업무 1개를 스킬로 만들기 (교안 검수, 만족도 분석, 강사 피드백 메일 등). 동료에게 테스트 요청 → 피드백 반영하여 v2로 개선.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M8 -->
+  <div class="module-card advanced-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">8</div>
+      <div class="module-meta">
+        <div class="module-title">Agent Teams</div>
+        <div class="module-subtitle">AGENTS.md · TF 파이프라인</div>
+      </div>
+      <div class="module-badge">🤝</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M4 Subagent는 독립 작업 병렬 처리. "만족도 분석 → 결과 리포트 → 강사/담당자 전달"처럼 <strong>순서가 있는 파이프라인</strong>은 역할 분담이 필요. Agent Teams로 분석팀/리포트팀/전달팀이 각자 전문 영역에 집중.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 5 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"Agent Teams가 뭔지, Subagent와 뭐가 달라?" — 개념 이해</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>교육 종료 TF 파이프라인 설계</strong> — ① 분석팀: 만족도 분석 ② 리포트팀: 결과 리포트 생성 ③ 전달팀: Gmail draft + Slack 공유</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>AGENTS.md 파일 생성</strong> — TF 파이프라인을 코드로 정의</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content">"이번 교육 결과를 정리해줘. TF 파이프라인대로 실행해줘." — <strong>3개 에이전트 순차 실행</strong></div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><strong>다관점 검증</strong> — OM 관점(운영 효율), 강사 관점(피드백 유용성), 기업담당자 관점(보고 충분성)</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">본인 업무의 순차 워크플로우 1개를 Agent Teams로 설계. 최소 2개 에이전트 역할 정의 + AGENTS.md 초안 작성. 실행 결과를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M9 -->
+  <div class="module-card advanced-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">9</div>
+      <div class="module-meta">
+        <div class="module-title">팀 전파 + GitHub</div>
+        <div class="module-subtitle">배포 · 온보딩 · Session Wrap</div>
+      </div>
+      <div class="module-badge">📦</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M1~M8에서 만든 CLAUDE.md, 스킬, AGENTS.md가 내 컴퓨터에만 있다. <strong>GitHub에 올리면 누구든 <code>git clone</code> 한 번으로 동일 환경</strong>. 신규 입사자도 클론 → 설치 → 바로 업무 투입.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 4 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content">"GitHub, repo, clone, commit, push를 OM 업무 비유로 설명해줘" — 기초 이해</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>레포 준비부터 Push까지 한 흐름</strong> — README 정비 → .gitignore 확인 → git init → commit → push 방법 안내</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><code>/my-session-wrap</code> 실행 — 이번 세션 작업 자동 정리 체험</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>신규 OM 온보딩 가이드 작성</strong> — 7단계: git clone → CC 설치 → CLAUDE.md 확인 → MCP 설정 → 시트 접근 → /교안검수 실행 → 첫 업무 완료</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">GitHub에 레포를 하나 만들어보기 (cc-tutor-om 또는 개인 프로젝트). git init → commit → push 과정 체험. README.md 작성. 결과를 #cc-tutor-om-help에 공유.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- M10 -->
+  <div class="module-card advanced-card">
+    <div class="module-header" onclick="toggle(this)">
+      <div class="module-num">10</div>
+      <div class="module-meta">
+        <div class="module-title">종합 실전 프로젝트 (Capstone)</div>
+        <div class="module-subtitle">M1~M9 통합 · 본인 업무 1건 E2E 자동화</div>
+      </div>
+      <div class="module-badge">🎖️</div>
+      <svg class="module-chevron" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>
+    </div>
+    <div class="module-body">
+      <div class="module-section">
+        <div class="section-label why">💡 WHY</div>
+        <div class="why-text">M1~M9에서 10가지 핵심 기능을 모두 배웠다. 이제 <strong>본인의 실제 업무 하나를 처음부터 끝까지 자동화</strong>. Step1 Gems의 최종 진화 버전을 만든다.</div>
+      </div>
+      <div class="module-section">
+        <div class="section-label practice">🛠 실습 내용 — 6 Steps</div>
+        <div class="practice-group">
+          <div class="step"><div class="step-num">1</div><div class="step-content"><strong>주제 선정</strong> — 예시: 매달 만족도 E2E 자동화, 분기별 교안 10개 일괄 검수, 강사 매칭 E2E 등</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-content"><strong>현재 상태 분석</strong> — 몇 단계? 각 단계 소요 시간? 어디서 반복/병목?</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-content"><strong>E2E 설계 (Plan 모드)</strong> — 어떤 기능 조합? CLAUDE.md 추가 규칙? 스킬? AGENTS.md? MCP?</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-content"><strong>구현</strong> — CLAUDE.md 규칙 추가 + 스킬 제작 + AGENTS.md 작성 + MCP 연동</div></div>
+          <div class="step"><div class="step-num">5</div><div class="step-content"><strong>테스트</strong> — 실제 데이터(my-data/) 또는 samples/로 전체 파이프라인 실행 + 검증</div></div>
+          <div class="step"><div class="step-num">6</div><div class="step-content"><strong>팀 공유</strong> — README.md 작성 + 사용법 가이드 + GitHub 올리기 (또는 준비)</div></div>
+        </div>
+      </div>
+      <div class="module-section">
+        <div class="section-label mission">📌 주간 미션</div>
+        <div class="mission-text">프로젝트를 완성하고 팀 사례 공유회에서 발표. Before/After 비교(시간, 품질, 반복 횟수). 활용한 Claude Code 기능 목록. 팀원이 따라 할 수 있는 재현 가이드.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 학습자 매칭 테이블 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="learner-section">
+    <h2>Step1 사례 기반 개인화</h2>
+    <p style="color:var(--text-dim);font-size:15px;margin-bottom:16px;">Step1에서 만든 Gems/GPTs 에이전트를 기반으로 추천 모듈과 학습 시나리오를 개인화합니다.</p>
+    <div style="overflow-x:auto;">
+      <table class="learner-table">
+        <thead>
+          <tr><th>이름</th><th>팀</th><th>Step1 에이전트</th><th>추천 모듈</th><th>키워드</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>김세린</td><td>2팀</td><td>교안 검수봇</td><td>M2</td><td>PPT 입출력, 40분→10분, 오탈자</td></tr>
+          <tr><td>박규은</td><td>2팀</td><td>교안 검수 + CS 답변봇</td><td>M2</td><td>240슬라이드, 디자인 붕괴, REJECT/PASS</td></tr>
+          <tr><td>임지민</td><td>1팀</td><td>교안 감별사 커리</td><td>M2</td><td>GPT Project, AX/ML/SQL, 20분→5분</td></tr>
+          <tr><td>박현정</td><td>2팀</td><td>편안한 교환 검수</td><td>M4</td><td>대량 페이지, 병렬 처리</td></tr>
+          <tr><td>조여경</td><td>1팀</td><td>만족도 피드백 에이전트</td><td>M2</td><td>시트 자동화, 메일 초안, 30분→10분</td></tr>
+          <tr><td>이혜림</td><td>2팀</td><td>교육 만족도 자동 분석</td><td>M2</td><td>주관식 분석, 긍정/부정, 50%+</td></tr>
+          <tr><td>이현정</td><td>1팀</td><td>데이터 관리 에이전트</td><td>M2</td><td>앱스크립트 오류, 시트 동기화</td></tr>
+          <tr><td>홍정이</td><td>1팀</td><td>실습코치 리크루터</td><td>M4</td><td>Boolean 검색, 이력서 분석</td></tr>
+          <tr><td>안서연</td><td>2팀</td><td>강사/코치 선별 에이전트</td><td>M4</td><td>매칭 점수, 면접 질문 도출</td></tr>
+          <tr><td>장수진</td><td>2팀</td><td>환각 해결 프롬프트</td><td>M1</td><td>데이터 지어냄, CLAUDE.md 규칙</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 학습용 시트 & 샘플 데이터 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="data-section">
+    <h2>실습 데이터</h2>
+    <p>실제 업무 시트(학습용 복제본)와 샘플 CSV로 실습합니다. <code>my-data/</code>에 본인 데이터를 넣으면 더 실전적인 실습이 가능합니다.</p>
+    <div class="data-grid">
+      <div class="data-item"><div class="data-icon">📅</div><div><div class="data-name">코치일정 캘린더</div><div class="data-desc">코치별 강의 일정 + 빈 날짜 조회</div></div></div>
+      <div class="data-item"><div class="data-icon">🔑</div><div><div class="data-name">GPT 계정 관리</div><div class="data-desc">공용 계정 배정 + 사용 현황</div></div></div>
+      <div class="data-item"><div class="data-icon">🥚</div><div><div class="data-name">에그 관리 대장</div><div class="data-desc">에그 대여/반납 상태 관리</div></div></div>
+      <div class="data-item"><div class="data-icon">📊</div><div><div class="data-name">위클리 시트</div><div class="data-desc">주간 운영 현황 + 종료/회고</div></div></div>
+      <div class="data-item"><div class="data-icon">📋</div><div><div class="data-name">강의관리 시트</div><div class="data-desc">과정별 만족도 + 이슈 관리</div></div></div>
+      <div class="data-item"><div class="data-icon">🔄</div><div><div class="data-name">싱크업 시트</div><div class="data-desc">영업→OM 핸드오프 문서</div></div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- Footer -->
+<div class="footer">
+  <p>CC-Tutor-OM · <a href="https://github.com/ejlee-0924/cc-tutor-om">GitHub</a> · 데이원컴퍼니 인재성장팀</p>
+  <p style="margin-top:8px;">Built with Claude Code</p>
+</div>
+
+<script>
+function toggle(header) {
+  const card = header.closest('.module-card');
+  card.classList.toggle('open');
+}
+
+// 첫 번째 모듈 자동 열기 (선택)
+// document.querySelector('.module-card')?.classList.add('open');
+</script>
+</body>
+</html>

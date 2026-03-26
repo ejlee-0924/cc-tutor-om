@@ -1,7 +1,7 @@
 # 모듈 2: 파일 다루기 + Plan 모드
 
 > 배우는 기능: Read, Write, Edit, Glob, Grep, Plan 모드, Think Harder
-> OM 실습: 교안 PPT 검수 + 만족도 CSV 분석 + 앱스크립트 코드 분석 + Claude in Office 소개
+> OM 실습: 교안 PPT 검수 + 만족도 CSV 분석
 
 ---
 
@@ -171,53 +171,7 @@ python-pptx 설치 필요 시 Claude Code가 자동으로 설치를 시도한다
 
 CLAUDE.md의 분석 규칙(원문 보존, 긍정/부정 분류)이 적용되는지 확인한다.
 
----
-
-### Step 9 — 메일 초안 생성
-
-📋 아래를 복사해서 입력하세요:
-
-    분석 결과를 바탕으로 두 가지 메일 초안을 만들어줘:
-    1. 고객사 보고 메일 (격식체)
-    2. 강사 피드백 메일 (동료 톤)
-
-CLAUDE.md의 톤앤매너 규칙이 적용되는지 확인한다.
-
-### Part D: 코드 분석 (디버깅 맛보기)
-
----
-
-### Step 10 — 앱스크립트 분석
-
-📋 아래를 복사해서 입력하세요:
-
-    apps-script-broken.js를 읽고 문제점을 찾아줘.
-    각 버그마다 원인과 해결 방법을 설명해줘.
-
-5개 버그가 모두 발견되는지 확인한다.
-
----
-
-### Step 11 — 수정본 생성
-
-📋 아래를 복사해서 입력하세요:
-
-    버그를 모두 수정한 apps-script-fixed.js를 만들어줘.
-
-수정된 코드를 확인한다.
-
-### Part E: Claude in Office 소개
-
----
-
-### Step 12 — 역할 분담 정리
-
-Claude in PowerPoint와 Claude in Excel의 존재를 소개한다:
-- Claude Code: 대량 일괄 처리 (오늘 배운 것)
-- Claude in PPT: 개별 슬라이드 수정 (PPT 앱 안에서)
-- Claude in Excel: 셀 단위 분석 (Excel 앱 안에서)
-
-역할 분담 가이드를 reports/tool-guide.md로 저장한다.
+> 💡 **참고:** Claude in PowerPoint/Excel도 있습니다. 대량 일괄 처리 = Code, 개별 수정 = Office. 역할 분담 원칙으로 기억하세요.
 
 ---
 
